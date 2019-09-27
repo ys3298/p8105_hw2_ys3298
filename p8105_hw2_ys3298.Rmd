@@ -23,16 +23,16 @@ mode(trash_wheel$sports_balls)
 
 precipi2018 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 3, skip = 1) %>% 
   janitor::clean_names() %>%
-  filter( total != "NA") %>%
-  filter( month != "NA") %>%
+  filter(total != "NA") %>%
+  filter(month != "NA") %>%
   mutate(year = "2018")
 total2018 = sum(pull(precipi2018, total))
 
 #why sheet=3 actually tab2?
 precipi2017 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 4, skip = 1) %>% 
   janitor::clean_names() %>%
-  filter( total != "NA") %>%
-  filter( month != "NA") %>%
+  filter(total != "NA") %>%
+  filter(month != "NA") %>%
   mutate(year = "2017")
 
 precipi = bind_rows(precipi2017, precipi2018) %>%
@@ -53,7 +53,17 @@ From the data, we can notice that the total precipitations for 2014-2018 are 51.
 
 # PROBLEM2
 ```{r}
+pols = read_csv("../data/pols-month.csv") %>%
+  janitor::clean_names() %>%
+  separate(mon, into = c("year", "month", "day")) %>%
+  mutate(month = month.name[as.factor(month)]) %>%
+  select(-prez_dem, -prez_gop, -day)
 
+snp = read_csv("../data/snp.csv") %>%
+  janitor::clean_names() %>%
+  separate(date, into = c("day", "month", "year")) %>%
+  mutate(month = month.name[as.factor(month)]) %>%
+  select(year, month, everything())
 ```
 
 
