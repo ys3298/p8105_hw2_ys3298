@@ -48,7 +48,7 @@ From the data, we can notice that the total precipitations for 2014-2018 are 51.
 pols = read_csv("../data/pols-month.csv") %>%
   janitor::clean_names() %>%
   separate(mon, into = c("year", "month", "day")) %>%
-  mutate(month = month.name[as.factor(month)],
+  mutate(month = month.abb[as.factor(month)],
          president = factor(prez_gop, labels = c("dem", "gop", "others(shows as 2 in prez_gop)"))) %>%
   select(-prez_dem, -prez_gop, -day)
 
@@ -56,7 +56,7 @@ snp = read_csv("../data/snp.csv") %>%
   janitor::clean_names() %>%
   separate(date, into = c("day", "month", "year")) %>%
   arrange(year, as.integer(month)) %>%
-  mutate(month = month.name[as.factor(month)]) %>%
+  mutate(month = month.abb[as.factor(month)]) %>%
   select(year, month, everything())
 
 unemploy = read_csv("../data/unemployment.csv")
@@ -75,8 +75,49 @@ snp_pols_unemploy = left_join(tidy_unemploy, snp_pols, by = c("year", "month"))
 
 ```{r}
 names = read_csv("../data/Popular_Baby_Names.csv") %>%
-  mutate()
+  janitor::clean_names() %>%
+  mutate(
+    childs_first_name = str_to_upper(childs_first_name)) 
+
+names$ethnicity[names$ethnicity == "ASIAN AND PACI"] = "ASIAN AND PACIFIC ISLANDER"
+names$ethnicity[names$ethnicity == "BLACK NON HISP"] = "BLACK NON HISPANIC"
+names$ethnicity[names$ethnicity == "WHITE NON HISP"] = "WHITE NON HISPANIC"
+
+names = distinct(names)
+# unique(names)
+dim(names)
 ```
+
+```{r}
+# showing the rank in popularity of the name “Olivia” 
+olivia = subset(names, names$childs_first_name == "OLIVIA") %>%
+  select(year_of_birth, ethnicity, rank) %>%
+  pivot_wider(
+    names_from = ethnicity,
+    values_from = rank) %>%
+    arrange(year_of_birth)
+olivia 
+
+# showing the most popular name among male children 
+popular_male = filter(names, gender == "MALE") %>%
+  select(-gender, -count) %>%
+  filter(rank == "1") %>%
+  select(-rank) %>%
+  pivot_wider(
+    names_from = ethnicity,
+    values_from = childs_first_name) %>%
+  arrange(year_of_birth)
+popular_male
+
+# a scatter plot showing the number of children with a name (y axis) against the rank in popularity of that name (x axis)
+male = filter(names, gender == "MALE") %>%
+  filter(year_of_birth == "2016") %>%
+  filter(ethnicity == "WHITE NON HISPANIC")
+ggplot(male, aes(x = rank, y = count)) + geom_point(color = "blue") + ggtitle("WHITE NON HISPANIC count vs rank")
+
+```
+
+
 
 
 
