@@ -13,13 +13,7 @@ trash_wheel = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", 
   janitor::clean_names() %>%
   filter(dumpster != "NA") %>%
   mutate(sports_balls = as.integer(sports_balls))
-
-##why numeric instead of integer??
-mode(trash_wheel$sports_balls) 
-
-```
-
-```{r}
+typeof(trash_wheel$sports_balls) 
 
 precipi2018 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 3, skip = 1) %>% 
   janitor::clean_names() %>%
@@ -28,7 +22,6 @@ precipi2018 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", 
   mutate(year = "2018")
 total2018 = sum(pull(precipi2018, total))
 
-#why sheet=3 actually tab2?
 precipi2017 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 4, skip = 1) %>% 
   janitor::clean_names() %>%
   filter(total != "NA") %>%
@@ -40,7 +33,6 @@ precipi = bind_rows(precipi2017, precipi2018) %>%
   mutate(month = month.name[month])
 total2017 = sum(pull(precipi2017, total))
 ```
-
 ```{r include=FALSE}
 year2018 = filter(trash_wheel, year == "2018")
 year2017 = filter(trash_wheel, year == "2017")
@@ -56,12 +48,14 @@ From the data, we can notice that the total precipitations for 2014-2018 are 51.
 pols = read_csv("../data/pols-month.csv") %>%
   janitor::clean_names() %>%
   separate(mon, into = c("year", "month", "day")) %>%
-  mutate(month = month.name[as.factor(month)]) %>%
+  mutate(month = month.name[as.factor(month)],
+         president = factor(prez_gop, labels = c("dem", "gop", "others(shows as 2 in prez_gop)"))) %>%
   select(-prez_dem, -prez_gop, -day)
 
 snp = read_csv("../data/snp.csv") %>%
   janitor::clean_names() %>%
   separate(date, into = c("day", "month", "year")) %>%
+  arrange(year, as.integer(month)) %>%
   mutate(month = month.name[as.factor(month)]) %>%
   select(year, month, everything())
 
@@ -69,14 +63,14 @@ unemploy = read_csv("../data/unemployment.csv")
 tidy_unemploy = 
   pivot_longer(
     unemploy,
-    Jan : Dec,
+    Jan:Dec,
     names_to = "month",
     values_to = "unemployment") %>%
   select(year = Year, everything()) %>%
   mutate( year = as.character(year))
 
-snp_pols = inner_join(snp, pols)
-join = left_join(snp_pols, tidy_unemploy, by = c("year", "month"))
+snp_pols = left_join(pols, snp, by = c("year", "month"))
+snp_pols_unemploy = left_join(tidy_unemploy, snp_pols, by = c("year", "month"))
 ```
 
 
