@@ -73,6 +73,12 @@ snp_pols = left_join(pols, snp, by = c("year", "month"))
 snp_pols_unemploy = left_join(tidy_unemploy, snp_pols, by = c("year", "month"))
 ```
 
+```{r}
+names = read_csv("../data/Popular_Baby_Names.csv") %>%
+  mutate()
+```
+
+
 
 
 
