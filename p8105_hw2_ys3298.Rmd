@@ -64,6 +64,19 @@ snp = read_csv("../data/snp.csv") %>%
   separate(date, into = c("day", "month", "year")) %>%
   mutate(month = month.name[as.factor(month)]) %>%
   select(year, month, everything())
+
+unemploy = read_csv("../data/unemployment.csv")
+tidy_unemploy = 
+  pivot_longer(
+    unemploy,
+    Jan : Dec,
+    names_to = "month",
+    values_to = "unemployment") %>%
+  select(year = Year, everything()) %>%
+  mutate( year = as.character(year))
+
+snp_pols = inner_join(snp, pols)
+join = left_join(snp_pols, tidy_unemploy, by = c("year", "month"))
 ```
 
 
