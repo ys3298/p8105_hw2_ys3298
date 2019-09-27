@@ -53,7 +53,7 @@ year2014 = filter(trash_wheel, year == "2014")
 From the data, we can notice that the total precipitations for 2014-2018 are 51.59, 43.21, 39.95, `r total2017` and `r total2018` respectively, which decrease year by year. The median numbers of sports balls in a dumpster in 2014-2018 are `r median(year2014$sports_balls)`, `r median(year2015$sports_balls)`, `r median(year2016$sports_balls)`, `r median(year2017$sports_balls)`, `r median(year2018$sports_balls)`. The mean numbers of plastic bottle in a dumpster in 2014-2018 are `r median(year2014$plastic_bottles)`, `r median(year2015$plastic_bottles)`, `r median(year2016$plastic_bottles)`, `r median(year2017$plastic_bottles)`, `r median(year2018$plastic_bottles)`. The mean numbers of grocery bags in 2014-2018 are `r round(mean(year2014$grocery_bags), 0)`, `r round(mean(year2015$grocery_bags), 0)`, `r round(mean(year2016$grocery_bags), 0)`, `r round(mean(year2017$grocery_bags), 0)`, `r round(mean(year2018$grocery_bags), 0)`. From these data, we can easily noticed that the number of sports balls, plastic bottle and grocery bags firstly increased and then decrease from 2014 to 2018.
 
 # PROBLEM2
-```{r echo = TRUE, results = 'hide'}
+```{r}
 # clean the data in pols and snp 
 pols = read_csv("../data/pols-month.csv") %>%
   janitor::clean_names() %>%
@@ -89,7 +89,7 @@ snp_pols_unemploy
 In the pols_month dataset, there are 9 variables related to the number of national politicians who are democratic or republican at any given time. **prez** means president, **gov** means governors, **sen** means senators, **rep** means representatives and **gop** means republican, **dem** means democratic. File “snp” contains 2 variables related to Standard & Poor’s stock market index (S&P), often used as a representative measure of stock market as a whole. "Unemployment" shows percentage of unemployment in each month of the associated year. After we merge snp, pols and unemploy, we get a (`r dim(snp_pols_unemploy)`) dataset. We can clearly see what party the president is, how many governors in each party, how many unemployment and what's the Standard & Poor’s stock market index in each month from `r min(snp_pols_unemploy$year)` to `r max(snp_pols_unemploy$year)`. 
 
 # PROBLEM3
-```{r echo = TRUE, results = 'hide'}
+```{r}
 # unify the types
 names = read_csv("../data/Popular_Baby_Names.csv") %>%
   janitor::clean_names() %>%
@@ -107,7 +107,7 @@ dim(names)
 names
 ```
 
-```{r echo = TRUE, results = 'hide'}
+```{r}
 # showing the rank in popularity of the name “Olivia” 
 olivia = subset(names, names$childs_first_name == "OLIVIA") %>%
   select(year_of_birth, ethnicity, rank) %>%
