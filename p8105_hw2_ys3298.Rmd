@@ -4,7 +4,7 @@ author: "Yimeng SHANG"
 date: "9/26/2019"
 output: github_document
 ---
-PROBLEM1
+# PROBLEM1
 ```{r}
 library(tidyverse)
 library(readxl)
@@ -50,6 +50,12 @@ year2014 = filter(trash_wheel, year == "2014")
 ```
 
 From the data, we can notice that the total precipitations for 2014-2018 are 51.59, 43.21, 39.95, `r total2017` and `r total2018` respectively, which decrease year by year. The median numbers of sports balls in a dumpster in 2014-2018 are `r median(year2014$sports_balls)`, `r median(year2015$sports_balls)`, `r median(year2016$sports_balls)`, `r median(year2017$sports_balls)`, `r median(year2018$sports_balls)`. The mean numbers of plastic bottle in a dumpster in 2014-2018 are `r median(year2014$plastic_bottles)`, `r median(year2015$plastic_bottles)`, `r median(year2016$plastic_bottles)`, `r median(year2017$plastic_bottles)`, `r median(year2018$plastic_bottles)`. The mean numbers of grocery bags in 2014-2018 are `r round(mean(year2014$grocery_bags), 0)`, `r round(mean(year2015$grocery_bags), 0)`, `r round(mean(year2016$grocery_bags), 0)`, `r round(mean(year2017$grocery_bags), 0)`, `r round(mean(year2018$grocery_bags), 0)`. From these data, we can easily noticed that the number of sports balls, plastic bottle and grocery bags firstly increased and then decrease from 2014 to 2018.
+
+# PROBLEM2
+```{r}
+
+```
+
 
 
 
