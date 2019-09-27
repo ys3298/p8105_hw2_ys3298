@@ -4,8 +4,52 @@ author: "Yimeng SHANG"
 date: "9/26/2019"
 output: github_document
 ---
+PROBLEM1
+```{r}
+library(tidyverse)
+library(readxl)
+
+trash_wheel = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 1) %>%
+  janitor::clean_names() %>%
+  filter(dumpster != "NA") %>%
+  mutate(sports_balls = as.integer(sports_balls))
+
+##why numeric instead of integer??
+mode(trash_wheel$sports_balls) 
+
+```
 
 ```{r}
 
+precipi2018 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 3, skip = 1) %>% 
+  janitor::clean_names() %>%
+  filter( total != "NA") %>%
+  filter( month != "NA") %>%
+  mutate(year = "2018")
+total2018 = sum(pull(precipi2018, total))
+
+#why sheet=3 actually tab2?
+precipi2017 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 4, skip = 1) %>% 
+  janitor::clean_names() %>%
+  filter( total != "NA") %>%
+  filter( month != "NA") %>%
+  mutate(year = "2017")
+
+precipi = bind_rows(precipi2017, precipi2018) %>%
+  select(year, month, total) %>%
+  mutate(month = month.name[month])
+total2017 = sum(pull(precipi2017, total))
 ```
+
+```{r include=FALSE}
+year2018 = filter(trash_wheel, year == "2018")
+year2017 = filter(trash_wheel, year == "2017")
+year2016 = filter(trash_wheel, year == "2016")
+year2015 = filter(trash_wheel, year == "2015")
+year2014 = filter(trash_wheel, year == "2014")
+```
+
+From the data, we can notice that the total precipitations for 2014-2018 are 51.59, 43.21, 39.95, `r total2017` and `r total2018` respectively, which decrease year by year. The median numbers of sports balls in a dumpster in 2014-2018 are `r median(year2014$sports_balls)`, `r median(year2015$sports_balls)`, `r median(year2016$sports_balls)`, `r median(year2017$sports_balls)`, `r median(year2018$sports_balls)`. The mean numbers of plastic bottle in a dumpster in 2014-2018 are `r median(year2014$plastic_bottles)`, `r median(year2015$plastic_bottles)`, `r median(year2016$plastic_bottles)`, `r median(year2017$plastic_bottles)`, `r median(year2018$plastic_bottles)`. The mean numbers of grocery bags in 2014-2018 are `r round(mean(year2014$grocery_bags), 0)`, `r round(mean(year2015$grocery_bags), 0)`, `r round(mean(year2016$grocery_bags), 0)`, `r round(mean(year2017$grocery_bags), 0)`, `r round(mean(year2018$grocery_bags), 0)`. From these data, we can easily noticed that the number of sports balls, plastic bottle and grocery bags firstly increased and then decrease from 2014 to 2018.
+
+
 
