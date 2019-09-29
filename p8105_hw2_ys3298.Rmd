@@ -16,14 +16,13 @@ trash_wheel = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", 
 typeof(trash_wheel$sports_balls) 
 
 # remove NA from dumpster-specific data
-precipi2018 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 3, skip = 1) %>% 
+precipi2018 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 3, skip = 1) %>%
   janitor::clean_names() %>%
   filter(total != "NA") %>%
   filter(month != "NA") %>%
   mutate(year = "2018")
-total2018 = sum(pull(precipi2018, total))
 
-precipi2017 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 4, skip = 1) %>% 
+precipi2017 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 4, skip = 1) %>%
   janitor::clean_names() %>%
   filter(total != "NA") %>%
   filter(month != "NA") %>%
@@ -41,6 +40,8 @@ precipi
 ```{r include=FALSE}
 # for inline code
 total2017 = sum(pull(precipi2017, total))
+total2018 = sum(pull(precipi2018, total))
+
 year2018 = filter(trash_wheel, year == "2018")
 year2017 = filter(trash_wheel, year == "2017")
 year2016 = filter(trash_wheel, year == "2016")
@@ -48,7 +49,10 @@ year2015 = filter(trash_wheel, year == "2015")
 year2014 = filter(trash_wheel, year == "2014")
 ```
 
-From the data, we can notice that the total precipitations for 2014-2018 are 51.59, 43.21, 39.95, `r total2017` and `r total2018` respectively, which decrease year by year. The median numbers of sports balls in a dumpster in 2014-2018 are `r median(year2014$sports_balls)`, `r median(year2015$sports_balls)`, `r median(year2016$sports_balls)`, `r median(year2017$sports_balls)`, `r median(year2018$sports_balls)`. The mean numbers of plastic bottle in a dumpster in 2014-2018 are `r median(year2014$plastic_bottles)`, `r median(year2015$plastic_bottles)`, `r median(year2016$plastic_bottles)`, `r median(year2017$plastic_bottles)`, `r median(year2018$plastic_bottles)`. The mean numbers of grocery bags in 2014-2018 are `r round(mean(year2014$grocery_bags), 0)`, `r round(mean(year2015$grocery_bags), 0)`, `r round(mean(year2016$grocery_bags), 0)`, `r round(mean(year2017$grocery_bags), 0)`, `r round(mean(year2018$grocery_bags), 0)`. From these data, we can easily noticed that the number of sports balls, plastic bottle and grocery bags firstly increased and then decrease from 2014 to 2018.
+From the data, we can notice that the total precipitations for 2014-2018 are 51.59, 43.21, 39.95, `r total2017` and `r total2018` respectively, which decrease year by year.
+For trash_wheel dataset, there are `r nrow(trash_wheel)` observations. Variables from this dataset include "year", "month", "date", numbers of "plastic bottles", "glass bottles" etc. For precipitation dataset, there are `r nrow(precipi)` observations(excluding the total number for whole year in 2017 and 2018.). Variables include year, month and total number of precipitation in each month in 2017 and 2018. 
+
+The median numbers of sports balls in a dumpster in 2014-2018 are `r median(year2014$sports_balls)`, `r median(year2015$sports_balls)`, `r median(year2016$sports_balls)`, `r median(year2017$sports_balls)`, `r median(year2018$sports_balls)`. The mean numbers of plastic bottle in a dumpster in 2014-2018 are `r median(year2014$plastic_bottles)`, `r median(year2015$plastic_bottles)`, `r median(year2016$plastic_bottles)`, `r median(year2017$plastic_bottles)`, `r median(year2018$plastic_bottles)`. The mean numbers of grocery bags in 2014-2018 are `r round(mean(year2014$grocery_bags), 0)`, `r round(mean(year2015$grocery_bags), 0)`, `r round(mean(year2016$grocery_bags), 0)`, `r round(mean(year2017$grocery_bags), 0)`, `r round(mean(year2018$grocery_bags), 0)`. From these data, we can easily noticed that the number of sports balls, plastic bottle and grocery bags firstly increased and then decrease from 2014 to 2018.
 
 # PROBLEM2
 ```{r}
@@ -56,14 +60,16 @@ From the data, we can notice that the total precipitations for 2014-2018 are 51.
 pols = read_csv("../data/pols-month.csv") %>%
   janitor::clean_names() %>%
   separate(mon, into = c("year", "month", "day")) %>%
+  mutate(year = as.integer(year), month = as.integer(month), day = as.integer(day)) %>%
   mutate(month = month.abb[as.factor(month)],
-         president = factor(prez_gop, labels = c("dem", "gop", "others(shows as 2 in prez_gop)"))) %>%
+         president = factor(prez_gop, labels = c("dem", "gop", "others(shown as 2 in prez_gop)"))) %>%
   select(-prez_dem, -prez_gop, -day)
 
 snp = read_csv("../data/snp.csv") %>%
   janitor::clean_names() %>%
   separate(date, into = c("day", "month", "year")) %>%
-  arrange(year, as.integer(month)) %>%
+  mutate(year = as.integer(year), month = as.integer(month), day = as.integer(day)) %>%
+  arrange(year, month) %>%
   mutate(month = month.abb[as.factor(month)]) %>%
   select(year, month, everything())
 
@@ -76,7 +82,7 @@ tidy_unemploy =
     names_to = "month",
     values_to = "unemployment") %>%
   select(year = Year, everything()) %>%
-  mutate( year = as.character(year))
+  mutate( year = as.integer(year))
 
 # Join the datasets 
 snp_pols = left_join(pols, snp, by = c("year", "month"))
@@ -94,9 +100,9 @@ names = read_csv("../data/Popular_Baby_Names.csv") %>%
   mutate(
     childs_first_name = str_to_upper(childs_first_name)) 
 
-names$ethnicity[names$ethnicity == "ASIAN AND PACI"] = "ASIAN AND PACIFIC ISLANDER"
-names$ethnicity[names$ethnicity == "BLACK NON HISP"] = "BLACK NON HISPANIC"
-names$ethnicity[names$ethnicity == "WHITE NON HISP"] = "WHITE NON HISPANIC"
+names$ethnicity[pull(names, ethnicity) == "ASIAN AND PACI"] = "ASIAN AND PACIFIC ISLANDER"
+names$ethnicity[pull(names, ethnicity) == "BLACK NON HISP"] = "BLACK NON HISPANIC"
+names$ethnicity[pull(names, ethnicity) == "WHITE NON HISP"] = "WHITE NON HISPANIC"
 
 names = distinct(names)
 # unique(names)
@@ -107,7 +113,7 @@ names
 
 ```{r}
 # showing the rank in popularity of the name “Olivia” 
-olivia = subset(names, names$childs_first_name == "OLIVIA") %>%
+olivia = subset(names, pull(names, childs_first_name) == "OLIVIA") %>%
   select(year_of_birth, ethnicity, rank) %>%
   pivot_wider(
     names_from = ethnicity,
