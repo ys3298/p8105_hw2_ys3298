@@ -59,16 +59,14 @@ The median numbers of sports balls in a dumpster in 2014-2018 are `r median(year
 # clean the data in pols and snp 
 pols = read_csv("../data/pols-month.csv") %>%
   janitor::clean_names() %>%
-  separate(mon, into = c("year", "month", "day")) %>%
-  mutate(year = as.integer(year), month = as.integer(month), day = as.integer(day)) %>%
+  separate(mon, into = c("year", "month", "day"), convert = TRUE) %>%
   mutate(month = month.abb[as.factor(month)],
          president = factor(prez_gop, labels = c("dem", "gop", "others(shown as 2 in prez_gop)"))) %>%
   select(-prez_dem, -prez_gop, -day)
 
 snp = read_csv("../data/snp.csv") %>%
   janitor::clean_names() %>%
-  separate(date, into = c("day", "month", "year")) %>%
-  mutate(year = as.integer(year), month = as.integer(month), day = as.integer(day)) %>%
+  separate(date, into = c("day", "month", "year"), convert = TRUE) %>%
   arrange(year, month) %>%
   mutate(month = month.abb[as.factor(month)]) %>%
   select(year, month, everything())
