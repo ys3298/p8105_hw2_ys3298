@@ -50,9 +50,10 @@ year2014 = filter(trash_wheel, year == "2014")
 ```
 
 From the data, we can notice that the total precipitations for 2014-2018 are 51.59, 43.21, 39.95, `r total2017` and `r total2018` respectively, which decrease year by year.
-For trash_wheel dataset, there are `r nrow(trash_wheel)` observations. Variables from this dataset include "year", "month", "date", numbers of "plastic bottles", "glass bottles" etc. For precipitation dataset, there are `r nrow(precipi)` observations(excluding the total number for whole year in 2017 and 2018.). Variables include year, month and total number of precipitation in each month in 2017 and 2018. 
+For trash_wheel dataset, there are `r nrow(trash_wheel)` observations and `r ncol(trash_wheel)` variables.  Key Variables from this dataset include "dumpster", "year", "month", "date", numbers of "plastic bottles", "glass bottles" etc. For precipitation dataset, there are `r nrow(precipi)` observations(excluding the total number for whole year in 2017 and 2018.) and `r ncol(trash_wheel)` variables. Key Variables include year, month and total number of precipitation in each month in 2017 and 2018. 
 
-The median numbers of sports balls in a dumpster in 2014-2018 are `r median(year2014$sports_balls)`, `r median(year2015$sports_balls)`, `r median(year2016$sports_balls)`, `r median(year2017$sports_balls)`, `r median(year2018$sports_balls)`. The mean numbers of plastic bottle in a dumpster in 2014-2018 are `r median(year2014$plastic_bottles)`, `r median(year2015$plastic_bottles)`, `r median(year2016$plastic_bottles)`, `r median(year2017$plastic_bottles)`, `r median(year2018$plastic_bottles)`. The mean numbers of grocery bags in 2014-2018 are `r round(mean(year2014$grocery_bags), 0)`, `r round(mean(year2015$grocery_bags), 0)`, `r round(mean(year2016$grocery_bags), 0)`, `r round(mean(year2017$grocery_bags), 0)`, `r round(mean(year2018$grocery_bags), 0)`. From these data, we can easily noticed that the number of sports balls, plastic bottle and grocery bags firstly increased and then decrease from 2014 to 2018.
+
+The total precipitation in 2018 is `r total2018` inches. The median numbers of sports balls in a dumpster in 2014-2018 are `r median(year2014$sports_balls)`, `r median(year2015$sports_balls)`, `r median(year2016$sports_balls)`, `r median(year2017$sports_balls)`, `r median(year2018$sports_balls)`. The mean numbers of plastic bottle in a dumpster in 2014-2018 are `r median(year2014$plastic_bottles)`, `r median(year2015$plastic_bottles)`, `r median(year2016$plastic_bottles)`, `r median(year2017$plastic_bottles)`, `r median(year2018$plastic_bottles)`. The mean numbers of grocery bags in 2014-2018 are `r round(mean(year2014$grocery_bags), 0)`, `r round(mean(year2015$grocery_bags), 0)`, `r round(mean(year2016$grocery_bags), 0)`, `r round(mean(year2017$grocery_bags), 0)`, `r round(mean(year2018$grocery_bags), 0)`. From these data, we can easily noticed that the number of sports balls, plastic bottle and grocery bags firstly increased and then decrease from 2014 to 2018.
 
 # PROBLEM2
 ```{r}
@@ -61,21 +62,19 @@ pols = read_csv("../data/pols-month.csv") %>%
   janitor::clean_names() %>%
   separate(mon, into = c("year", "month", "day"), convert = TRUE) %>%
   mutate(month = month.abb[as.factor(month)],
-         president = factor(prez_gop, labels = c("dem", "gop", "others(shown as 2 in prez_gop)"))) %>%
+         president = factor(prez_gop, labels = c("dem", "gop", "gop"))) %>%   ##take"2" also as "gop"
   select(-prez_dem, -prez_gop, -day)
 
 snp = read_csv("../data/snp.csv") %>%
   janitor::clean_names() %>%
-  separate(date, into = c("day", "month", "year"), convert = TRUE) %>%
+  separate(date, into = c("month", "day", "year"), convert = TRUE) %>%
   arrange(year, month) %>%
   mutate(month = month.abb[as.factor(month)]) %>%
-  select(year, month, everything())
+  select(year, month, close, -day)
 
 # tidy the unemployment data 
-unemploy = read_csv("../data/unemployment.csv")
-tidy_unemploy = 
+tidy_unemploy = read_csv("../data/unemployment.csv") %>%
   pivot_longer(
-    unemploy,
     Jan:Dec,
     names_to = "month",
     values_to = "unemployment") %>%
@@ -88,7 +87,8 @@ snp_pols_unemploy = left_join(snp_pols, tidy_unemploy, by = c("year", "month"))
 
 snp_pols_unemploy
 ```
-In the pols_month dataset, there are 9 variables related to the number of national politicians who are democratic or republican at any given time. **prez** means president, **gov** means governors, **sen** means senators, **rep** means representatives and **gop** means republican, **dem** means democratic. File “snp” contains 2 variables related to Standard & Poor’s stock market index (S&P), often used as a representative measure of stock market as a whole. "Unemployment" shows percentage of unemployment in each month of the associated year. After we merge snp, pols and unemploy, we get a (`r dim(snp_pols_unemploy)`) dataset. We can clearly see what party the president is, how many governors in each party, how many unemployment and what's the Standard & Poor’s stock market index in each month from `r min(snp_pols_unemploy$year)` to `r max(snp_pols_unemploy$year)`. 
+
+In the pols_month dataset, there are `r ncol(pols)` variables and `r nrow(pols)` observations related to the number of national politicians who are democratic or republican at any given time. **prez** means president, **gov** means governors, **sen** means senators, **rep** means representatives and **gop** means republican, **dem** means democratic. File “snp” contains `r ncol(snp)` variables and `r nrow(snp)` observations related to Standard & Poor’s stock market index (S&P), often used as a representative measure of stock market as a whole. "Unemployment" shows percentage of unemployment in each month of the associated year, containing `r ncol(tidy_unemploy)` variables and `r nrow(tidy_unemploy)` observations. After we merge snp, pols and unemploy, we get a (`r dim(snp_pols_unemploy)`) dataset. We can clearly see what party the president is, how many governors in each party, how many unemployment and what's the Standard & Poor’s stock market index in each month from `r min(snp_pols_unemploy$year)` to `r max(snp_pols_unemploy$year)`. Key variables include $$year$$, $$month$$, $$unemployment$$, $$president$$ etc.
 
 # PROBLEM3
 ```{r}
@@ -138,7 +138,7 @@ male = filter(names, gender == "MALE") %>%
   filter(year_of_birth == "2016") %>%
   filter(ethnicity == "WHITE NON HISPANIC")
 
-ggplot(male, aes(x = rank, y = count)) + geom_point(color = "blue") + ggtitle("WHITE NON HISPANIC count vs rank")
+ggplot(male, aes(x = rank, y = count, color = count)) + geom_point() + ggtitle("WHITE NON HISPANIC count vs rank")
 ```
 
 
