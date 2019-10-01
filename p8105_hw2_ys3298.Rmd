@@ -9,20 +9,20 @@ output: github_document
 library(tidyverse)
 library(readxl)
 
-trash_wheel = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 1, range = "A2:N338") %>%
+trash_wheel = read_excel("../data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = 1, range = "A2:N408") %>%
   janitor::clean_names() %>%
   filter(dumpster != "NA") %>%
   mutate(sports_balls = as.integer(sports_balls))
 typeof(trash_wheel$sports_balls) 
 
 # remove NA from dumpster-specific data
-precipi2018 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 3, skip = 1) %>%
+precipi2018 = read_excel("../data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = 5, skip = 1) %>%
   janitor::clean_names() %>%
   filter(total != "NA") %>%
   filter(month != "NA") %>%
   mutate(year = "2018")
 
-precipi2017 = read_excel("../data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 4, skip = 1) %>%
+precipi2017 = read_excel("../data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = 6, skip = 1) %>%
   janitor::clean_names() %>%
   filter(total != "NA") %>%
   filter(month != "NA") %>%
