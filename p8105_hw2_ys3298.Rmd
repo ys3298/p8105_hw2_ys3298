@@ -5,10 +5,14 @@ date: "9/26/2019"
 output: github_document
 ---
 # PROBLEM1
+
 ```{r}
 library(tidyverse)
 library(readxl)
-
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE
+)
 trash_wheel = read_excel("../data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = 1, range = "A2:N408") %>%
   janitor::clean_names() %>%
   filter(dumpster != "NA") %>%
@@ -86,6 +90,7 @@ snp_pols = left_join(pols, snp, by = c("year", "month"))
 snp_pols_unemploy = left_join(snp_pols, tidy_unemploy, by = c("year", "month"))
 
 snp_pols_unemploy
+
 ```
 
 In the pols_month dataset, there are `r ncol(pols)` variables and `r nrow(pols)` observations related to the number of national politicians who are democratic or republican at any given time. **prez** means president, **gov** means governors, **sen** means senators, **rep** means representatives and **gop** means republican, **dem** means democratic. File “snp” contains `r ncol(snp)` variables and `r nrow(snp)` observations related to Standard & Poor’s stock market index (S&P), often used as a representative measure of stock market as a whole. "Unemployment" shows percentage of unemployment in each month of the associated year, containing `r ncol(tidy_unemploy)` variables and `r nrow(tidy_unemploy)` observations. After we merge snp, pols and unemploy, we get a (`r dim(snp_pols_unemploy)`) dataset. We can clearly see what party the president is, how many governors in each party, how many unemployment and what's the Standard & Poor’s stock market index in each month from `r min(snp_pols_unemploy$year)` to `r max(snp_pols_unemploy$year)`. Key variables include $$year$$, $$month$$, $$unemployment$$, $$president$$ etc.
@@ -102,34 +107,35 @@ names$ethnicity[pull(names, ethnicity) == "ASIAN AND PACI"] = "ASIAN AND PACIFIC
 names$ethnicity[pull(names, ethnicity) == "BLACK NON HISP"] = "BLACK NON HISPANIC"
 names$ethnicity[pull(names, ethnicity) == "WHITE NON HISP"] = "WHITE NON HISPANIC"
 
-names = distinct(names)
-# unique(names)
+names = distinct(names) 
 
+# unique(names)
 dim(names)
 names
 ```
 
 ```{r}
 # showing the rank in popularity of the name “Olivia” 
-olivia = subset(names, pull(names, childs_first_name) == "OLIVIA") %>%
+
+  subset(names, pull(names, childs_first_name) == "OLIVIA") %>%
   select(year_of_birth, ethnicity, rank) %>%
   pivot_wider(
-    names_from = ethnicity,
+    names_from = year_of_birth,
     values_from = rank) %>%
-    arrange(year_of_birth)
-olivia 
+  knitr::kable()
+
 
 # showing the most popular name among male children 
-popular_male = filter(names, gender == "MALE") %>%
+
+  filter(names, gender == "MALE") %>%
   select(-gender, -count) %>%
   filter(rank == "1") %>%
   select(-rank) %>%
   pivot_wider(
-    names_from = ethnicity,
+    names_from = year_of_birth,
     values_from = childs_first_name) %>%
-  arrange(year_of_birth)
+  knitr::kable()
 
-popular_male
 ```
 
 ```{r}
